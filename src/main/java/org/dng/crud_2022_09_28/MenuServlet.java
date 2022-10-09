@@ -13,7 +13,7 @@ import org.dng.crud_2022_09_28.Model.VinylRecord;
 
 @WebServlet(name = "menuServlet", value = "/")
 public class MenuServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -26,24 +26,14 @@ public class MenuServlet extends HttpServlet {
 
         try {
             switch (action) {
-                case "/new":
-                    showNewForm(request, response);
-                    break;
-                case "/insert":
-                    insert(request, response);
-                    break;
-                case "/delete":
-                    delete(request, response);
-                    break;
-                case "/edit":
-                    showEditForm(request, response);
-                    break;
-                case "/update":
-                    update(request, response);
-                    break;
-                default:
-                    listItems(request, response);
-                    break;
+                case "/new" -> showNewForm(request, response);
+                case "/insert" -> insert(request, response);
+                case "/delete" -> delete(request, response);
+                case "/edit" -> showEditForm(request, response);
+                case "/update" -> update(request, response);
+                case "/search" -> showSearchForm(request, response);
+                case "/find" -> find(request, response);
+                default -> listItems(request, response);
             }
 
         } catch (Exception e) {
@@ -64,6 +54,7 @@ public class MenuServlet extends HttpServlet {
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response){
         RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
+        request.setAttribute("mode", "insert");
         try {
             dispatcher.forward(request, response);
         } catch (ServletException | IOException e) {
@@ -76,13 +67,43 @@ public class MenuServlet extends HttpServlet {
         VinylRecord existingItem = DAO.selectById(id);
         RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
         request.setAttribute("item", existingItem);
+        request.setAttribute("mode", "update");
         try {
             dispatcher.forward(request, response);
         } catch (ServletException | IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    private void showSearchForm(HttpServletRequest request, HttpServletResponse response){
+        RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
+        request.setAttribute("mode", "search");
+        try {
+            dispatcher.forward(request, response);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void find(HttpServletRequest request, HttpServletResponse response){
+        //int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String author = request.getParameter("author");
+
+        int year = 0;
+        if (request.getParameter("year") != "") {
+            year = Integer.parseInt(request.getParameter("year"));
+        }
+
+        List<VinylRecord> listItems = DAO.searchByParam(name.trim(), author.trim(), year);
+        request.setAttribute("listItems", listItems);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("item-list.jsp");
+        try {
+            dispatcher.forward(request, response);
+        } catch (ServletException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void insert(HttpServletRequest request, HttpServletResponse response){
         String name = request.getParameter("name");

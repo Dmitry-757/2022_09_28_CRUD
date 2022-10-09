@@ -31,6 +31,7 @@
         <div class="container text-left">
 
             <a href="<%=request.getContextPath()%>/new" class="btn btn-success">Add New Record</a>
+            <a href="<%=request.getContextPath()%>/search" class="btn btn-success">Search Record</a>
         </div>
         <br>
         <table class="table table-bordered">
