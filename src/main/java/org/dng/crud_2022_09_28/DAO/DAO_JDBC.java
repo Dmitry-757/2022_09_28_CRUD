@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DAO {
+public class DAO_JDBC implements ICRUD{
     private static final String INSERT_SQL =
             """
                     INSERT vinyla_db.vinyla_tbl(name, author, year) 
@@ -17,11 +17,11 @@ public class DAO {
     private static final String UPDATE_SQL = "update vinyla_db.vinyla_tbl set name = ?, author= ?, year =? where id = ?;";
 
 
-    public static VinylRecord selectById(int id) {
+    public VinylRecord selectById(long id) {
         VinylRecord item = null;
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_BY_ID)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
@@ -36,7 +36,7 @@ public class DAO {
         return item;
     }
 
-    public static List<VinylRecord> selectAll() {
+    public List<VinylRecord> selectAll() {
         List<VinylRecord> itemList = new LinkedList<>();
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL)) {
@@ -55,7 +55,7 @@ public class DAO {
         return itemList;
     }
 
-    public static List<VinylRecord> searchByParam(String pName, String pAuthor, int pYear) {
+    public List<VinylRecord> searchByParam(String pName, String pAuthor, int pYear) {
         List<VinylRecord> itemList = new LinkedList<>();
         String SELECT_BY_PARAM= "select id, name, author, year from vinyla_db.vinyla_tbl";
         if (pName!=""&&pAuthor!=""&&pYear>0){
@@ -90,8 +90,8 @@ public class DAO {
     }
 
 
-    public static boolean insert(VinylRecord item) {
-        boolean rowInserted = false;
+    public void insert(VinylRecord item) {
+//        boolean rowInserted = false;
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_SQL,
                      Statement.RETURN_GENERATED_KEYS)) {
@@ -100,19 +100,19 @@ public class DAO {
             preparedStatement.setInt(3, item.getYear());
 
             preparedStatement.executeUpdate();
-            ResultSet rs = preparedStatement.getGeneratedKeys();
-            if (rs.next()) {
-                item.setId(rs.getInt("id"));
-                rowInserted = true;
-            }
+//            ResultSet rs = preparedStatement.getGeneratedKeys();
+//            if (rs.next()) {
+//                item.setId(rs.getInt("id"));
+//                rowInserted = true;
+//            }
         } catch (SQLException e) {
             printSQLException(e);
         }
-        return rowInserted;
+        //return rowInserted;
     }
 
-    public static boolean update(VinylRecord item) {
-        boolean rowUpdated = false;
+    public void update(VinylRecord item) {
+//        boolean rowUpdated = false;
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setString(1, item.getName());
@@ -120,24 +120,24 @@ public class DAO {
             statement.setInt(3, item.getYear());
             statement.setLong(4, item.getId());
 
-            rowUpdated = statement.executeUpdate() > 0;
+//            rowUpdated = statement.executeUpdate() > 0;
         } catch (SQLException e) {
             printSQLException(e);
         }
-        return rowUpdated;
+//        return rowUpdated;
     }
 
-    public static boolean deleteById(long id) {
-        boolean rowDeleted;
+    public void deleteById(long id) {
+//        boolean rowDeleted;
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_SQL)) {
             statement.setLong(1, id);
 
-            rowDeleted = statement.executeUpdate() > 0;
+//            rowDeleted = statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return rowDeleted;
+//        return rowDeleted;
     }
 
 

@@ -1,4 +1,4 @@
-package org.dng.crud_2022_09_28;
+package org.dng.crud_2022_09_28.Servlets;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -8,22 +8,24 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import org.dng.crud_2022_09_28.DAO.DAO;
+import org.dng.crud_2022_09_28.DAO.DAO_Hibernate;
+import org.dng.crud_2022_09_28.DAO.DAO_JDBC;
+import org.dng.crud_2022_09_28.DAO.ICRUD;
 import org.dng.crud_2022_09_28.Model.VinylRecord;
 
 @WebServlet(name = "menuServlet", value = "/")
 public class MenuServlet extends HttpServlet {
 //    private static final long serialVersionUID = 1L;
+//    private final ICRUD dao = new DAO_JDBC();
+    private final ICRUD dao = new DAO_Hibernate();
 
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         doGet(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         String action = request.getServletPath();
-
+//        System.out.println("action = "+action);
         try {
             switch (action) {
                 case "/new" -> showNewForm(request, response);
@@ -41,8 +43,9 @@ public class MenuServlet extends HttpServlet {
         }
     }
 
+
     private void listItems(HttpServletRequest request, HttpServletResponse response) {
-        List<VinylRecord> listItems = DAO.selectAll();
+        List<VinylRecord> listItems = dao.selectAll();
         request.setAttribute("listItems", listItems);
         RequestDispatcher dispatcher = request.getRequestDispatcher("item-list.jsp");
         try {
@@ -64,7 +67,7 @@ public class MenuServlet extends HttpServlet {
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response){
         int id = Integer.parseInt(request.getParameter("id"));
-        VinylRecord existingItem = DAO.selectById(id);
+        VinylRecord existingItem = dao.selectById(id);
         RequestDispatcher dispatcher = request.getRequestDispatcher("item-form.jsp");
         request.setAttribute("item", existingItem);
         request.setAttribute("mode", "update");
@@ -94,7 +97,7 @@ public class MenuServlet extends HttpServlet {
             year = Integer.parseInt(request.getParameter("year"));
         }
 
-        List<VinylRecord> listItems = DAO.searchByParam(name.trim(), author.trim(), year);
+        List<VinylRecord> listItems = dao.searchByParam(name.trim(), author.trim(), year);
         request.setAttribute("listItems", listItems);
         RequestDispatcher dispatcher = request.getRequestDispatcher("item-list.jsp");
         try {
@@ -109,8 +112,8 @@ public class MenuServlet extends HttpServlet {
         String name = request.getParameter("name");
         String author = request.getParameter("author");
         int year = Integer.parseInt(request.getParameter("year"));
-        VinylRecord newItem = new VinylRecord(-1, name, author, year);
-        DAO.insert(newItem);
+        VinylRecord newItem = new VinylRecord( name, author, year);
+        dao.insert(newItem);
         try {
             response.sendRedirect("list");
         } catch (IOException e) {
@@ -125,7 +128,7 @@ public class MenuServlet extends HttpServlet {
         int year = Integer.parseInt(request.getParameter("year"));
 
         VinylRecord item = new VinylRecord(id, name, author, year);
-        DAO.update(item);
+        dao.update(item);
         try {
             response.sendRedirect("list");
         } catch (IOException e) {
@@ -135,7 +138,7 @@ public class MenuServlet extends HttpServlet {
 
     private void delete(HttpServletRequest request, HttpServletResponse response){
         long id = Long.parseLong(request.getParameter("id"));
-        DAO.deleteById(id);
+        dao.deleteById(id);
         try {
             response.sendRedirect("list");
         } catch (IOException e) {
