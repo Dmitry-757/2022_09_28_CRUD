@@ -8,6 +8,7 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.dng.crud_2022_09_28.DAO.CreateAndFillDB;
 import org.dng.crud_2022_09_28.DAO.DAO_Hibernate;
 import org.dng.crud_2022_09_28.DAO.DAO_JDBC;
 import org.dng.crud_2022_09_28.DAO.ICRUD;
@@ -21,6 +22,12 @@ public class MenuServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         doGet(request, response);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        CreateAndFillDB.makeBD();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
