@@ -1,21 +1,31 @@
 package org.dng.crud_2022_09_28.DAO;
 
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.dng.crud_2022_09_28.Model.VinylRecord;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 
-import java.sql.*;
+
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DAO_Hibernate implements ICRUD {
+public class DAO_Hibernate_NamedQuery implements ICRUD {
 
 
 
     public void insert(VinylRecord item) {
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        session.persist(item);
+        //session.persist(item);
+        Query<VinylRecord> query = session.createNamedQuery("insert", VinylRecord.class);
+        query.setParameter("name", item.getName());
+        query.setParameter("author", item.getAuthor());
+        query.setParameter("year", item.getYear());
+        query.executeUpdate();
+        session.getTransaction().commit();
         session.close();
     }
 
@@ -23,7 +33,11 @@ public class DAO_Hibernate implements ICRUD {
         VinylRecord item = null;
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        item = session.find(VinylRecord.class, id);
+        Query<VinylRecord> query = session.createNamedQuery("selectById", VinylRecord.class);
+        query.setParameter("recId", id);
+
+        item = query.getSingleResult();
+//                session.find(VinylRecord.class, id);
         session.close();
         return item;
     }
@@ -34,7 +48,12 @@ public class DAO_Hibernate implements ICRUD {
 //        CriteriaQuery<VinylRecord> cq = session.getCriteriaBuilder().createQuery(VinylRecord.class);
 //        cq.from(VinylRecord.class);
 //        List<VinylRecord> itemList = session.createQuery(cq).getResultList();
-        itemList = session.createQuery("SELECT r FROM VinylRecord r", VinylRecord.class).getResultList();
+
+//        itemList = session.createQuery("SELECT r FROM VinylRecord r", VinylRecord.class).getResultList();
+        session.beginTransaction();
+        Query<VinylRecord> query = session.createNamedQuery("selectAll", VinylRecord.class);
+        itemList = query.getResultList();
+
         session.close();
         return itemList;
     }
@@ -43,6 +62,9 @@ public class DAO_Hibernate implements ICRUD {
         List<VinylRecord> itemList = new LinkedList<>();
 
         Session session = HibernateUtil.getSession();
+        CriteriaQuery<VinylRecord> cq = session.getCriteriaBuilder().createQuery(VinylRecord.class);
+        cq.from(VinylRecord.class);
+
         if (pName!=""&&pAuthor!=""&&pYear>0){
             String hql = "select r from VinylRecord r where r.name = :pName and r.author=:pAuthor and r.year = :pYear";
             itemList = session.createQuery(hql, VinylRecord.class)
@@ -80,9 +102,17 @@ public class DAO_Hibernate implements ICRUD {
 
     public void update(VinylRecord item) {
         Session session = HibernateUtil.getSession();
-        Transaction tx = session.beginTransaction();
-        session.merge(item);
-        tx.commit();
+//        Transaction tx = session.beginTransaction();
+//        session.merge(item);
+//        tx.commit();
+        session.beginTransaction();
+        Query<VinylRecord> query = session.createNamedQuery("update", VinylRecord.class);
+        query.setParameter("pName", item.getName());
+        query.setParameter("pAuthor", item.getAuthor());
+        query.setParameter("pYear", item.getYear());
+        query.setParameter("pId", item.getId());
+        query.executeUpdate();
+        session.getTransaction().commit();
         session.close();
     }
 
@@ -90,26 +120,13 @@ public class DAO_Hibernate implements ICRUD {
         VinylRecord record = selectById(id);
         Session session = HibernateUtil.getSession();
         session.beginTransaction();
-        session.remove(record);
+        //session.remove(record);
+        Query<VinylRecord> query = session.createNamedQuery("delete", VinylRecord.class);
+        query.setParameter("pId", id);
+        query.executeUpdate();
         session.getTransaction().commit();
         session.close();
     }
 
-
-//    private static void printSQLException(SQLException ex) {
-//        for (Throwable e : ex) {
-//            if (e instanceof SQLException) {
-//                e.printStackTrace(System.err);
-//                System.err.println("SQLState: " + ((SQLException) e).getSQLState());
-//                System.err.println("Error Code: " + ((SQLException) e).getErrorCode());
-//                System.err.println("Message: " + e.getMessage());
-//                Throwable t = ex.getCause();
-//                while (t != null) {
-//                    System.out.println("Cause: " + t);
-//                    t = t.getCause();
-//                }
-//            }
-//        }
-//    }
 
 }

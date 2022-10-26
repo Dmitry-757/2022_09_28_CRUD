@@ -6,6 +6,23 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "vinyla_tbl", schema = "vinyla_db")
+@org.hibernate.annotations.NamedNativeQueries({
+        @org.hibernate.annotations.NamedNativeQuery(
+                name = "insert",
+                query = "INSERT vinyla_db.vinyla_tbl(name, author, year) VALUES (?, ?, ?) ",
+                resultClass = VinylRecord.class
+        )
+})
+@org.hibernate.annotations.NamedQueries({
+        @org.hibernate.annotations.NamedQuery(name = "selectById", query = "select r from VinylRecord r where r.id = : recId"),
+        @org.hibernate.annotations.NamedQuery(name = "selectAll", query = "select r from VinylRecord r "),
+        @org.hibernate.annotations.NamedQuery(name = "update",
+                query = "update VinylRecord set name = :pName, author = :pAuthor, year = :pYear where id = :pId"),
+        @org.hibernate.annotations.NamedQuery(name = "delete",
+                query = "delete VinylRecord where id = :pId")
+
+})
+
 public class VinylRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
