@@ -8,17 +8,15 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import org.dng.crud_2022_09_28.DAO.CreateAndFillDB;
-import org.dng.crud_2022_09_28.DAO.DAO_Hibernate;
-import org.dng.crud_2022_09_28.DAO.DAO_JDBC;
-import org.dng.crud_2022_09_28.DAO.ICRUD;
+import org.dng.crud_2022_09_28.DAO.*;
 import org.dng.crud_2022_09_28.Model.VinylRecord;
 
 @WebServlet(name = "menuServlet", value = "/")
 public class MenuServlet extends HttpServlet {
 //    private static final long serialVersionUID = 1L;
 //    private final ICRUD dao = new DAO_JDBC();
-    private final ICRUD dao = new DAO_Hibernate();
+//    private final ICRUD dao = new DAO_Hibernate();
+    private final ICRUD dao = new DAO_Hibernate_NamedQuery();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         doGet(request, response);
