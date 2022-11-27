@@ -4,6 +4,17 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
     <persistence-unit name="default">
-
+<!--        <class>com.logic.ResTableEntity</class>-->
+        <properties>
+<!--            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />-->
+<!--            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/db_resorts" />-->
+<!--            <property name="javax.persistence.jdbc.user" value="root" />-->
+<!--            <property name="javax.persistence.jdbc.password" value="UJtgyu55b603nyZ" />-->
+<!--            &lt;!&ndash;            <property name="javax.persistence.jdbc.password" value="UJtgyu55b603nyZ" />&ndash;&gt;-->
+<!--            <property name="hibernate.show_sql" value="true" />-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
+        </properties>
+        
     </persistence-unit>
+
 </persistence>
